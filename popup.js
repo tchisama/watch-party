@@ -1,5 +1,5 @@
-// Nexus Firefox Compatibility Engine
-// This implementation uses the locally bundled Firebase SDK to bypass CSP restrictions.
+// Nexus Watch Party Engine (Compat Mode)
+// Accesses global 'firebase' object loaded via popup.html
 
 const firebaseConfig = {
     apiKey: "AIzaSyB4ngRSyh70p42UR4w3vfC0gyu9WBfWaOs",
@@ -11,7 +11,7 @@ const firebaseConfig = {
     measurementId: "G-PV0KZJP9MH"
 };
 
-// Initialize Firebase using the global compat SDK loaded in popup.html
+// Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -24,7 +24,11 @@ const joinBtn = document.getElementById('joinRoom');
 
 joinBtn.addEventListener('click', () => {
     const roomId = roomIdInput.value.trim();
-    if (!roomId) return;
+    if (!roomId) {
+        statusEl.innerText = "Error: Enter Room ID";
+        statusEl.style.color = "#ef4444";
+        return;
+    }
     joinRoom(roomId);
 });
 
@@ -39,6 +43,7 @@ function joinRoom(roomId) {
     roomRef.on('value', (snapshot) => {
         const data = snapshot.val();
         if (data && !isRemoteUpdate) {
+            console.log("Nexus: Remote Update received", data);
             isRemoteUpdate = true;
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                 if (tabs[0]) {
@@ -48,6 +53,7 @@ function joinRoom(roomId) {
                     });
                 }
             });
+            // Brief timeout to prevent echo
             setTimeout(() => { isRemoteUpdate = false; }, 500);
         }
     });
@@ -56,6 +62,7 @@ function joinRoom(roomId) {
 // Listen for local events from content.js
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "LOCAL_EVENT" && currentRoomId && !isRemoteUpdate) {
+        console.log("Nexus: Local Event detected, pushing to Firebase");
         db.ref('rooms/' + currentRoomId).set(message.data);
     }
 });
