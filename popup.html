@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nexus Sync</title>
+    <style>
+        body { width: 300px; padding: 15px; font-family: sans-serif; background: #121212; color: #e0e0e0; }
+        .container { display: flex; flex-direction: column; gap: 10px; }
+        input { padding: 8px; border-radius: 4px; border: 1px solid #333; background: #1e1e1e; color: white; }
+        button { padding: 10px; border: none; border-radius: 4px; background: #3b82f6; color: white; cursor: pointer; }
+        button:hover { background: #2563eb; }
+        .status { font-size: 12px; color: #10b981; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3>Nexus Sync</h3>
+        <input type="text" id="roomId" placeholder="Enter Room ID">
+        <button id="joinRoom">Join Party</button>
+        <div class="status" id="status">Ready</div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

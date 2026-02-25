@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Nexus Sync: Watch Party",
+  "version": "1.0.0",
+  "description": "Synchronize video playback across multiple browsers using Firebase.",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["https://*.firebaseio.com/", "https://*.googleapis.com/"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' https://www.gstatic.com; object-src 'self'"
+  }
+}
