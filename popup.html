@@ -18,6 +18,9 @@
         <button id="joinRoom">Join Party</button>
         <div class="status" id="status">Ready</div>
     </div>
-    <script src="popup.js"></script>
+    <!-- Nexus Fix: Local Firebase SDK for Firefox/Chrome CSP Compliance -->
+    <script src="vendor/firebase/firebase-app-compat.js"></script>
+    <script src="vendor/firebase/firebase-database-compat.js"></script>
+    <script src="popup.js" type="module"></script>
 </body>
 </html>

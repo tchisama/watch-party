@@ -1,5 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, onValue, set, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+// Nexus Firefox Compatibility Engine
+// This implementation uses the locally bundled Firebase SDK to bypass CSP restrictions.
 
 const firebaseConfig = {
     apiKey: "AIzaSyB4ngRSyh70p42UR4w3vfC0gyu9WBfWaOs",
@@ -11,9 +11,9 @@ const firebaseConfig = {
     measurementId: "G-PV0KZJP9MH"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+// Initialize Firebase using the global compat SDK loaded in popup.html
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
 let currentRoomId = null;
 let isRemoteUpdate = false;
@@ -30,15 +30,15 @@ joinBtn.addEventListener('click', () => {
 
 function joinRoom(roomId) {
     currentRoomId = roomId;
-    const roomRef = ref(db, 'rooms/' + roomId);
+    const roomRef = db.ref('rooms/' + roomId);
 
     statusEl.innerText = "Connected: " + roomId;
     statusEl.style.color = "#3b82f6";
 
     // Listen for remote changes
-    onValue(roomRef, (snapshot) => {
+    roomRef.on('value', (snapshot) => {
         const data = snapshot.val();
-        if (data) {
+        if (data && !isRemoteUpdate) {
             isRemoteUpdate = true;
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                 if (tabs[0]) {
@@ -56,6 +56,6 @@ function joinRoom(roomId) {
 // Listen for local events from content.js
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "LOCAL_EVENT" && currentRoomId && !isRemoteUpdate) {
-        set(ref(db, 'rooms/' + currentRoomId), message.data);
+        db.ref('rooms/' + currentRoomId).set(message.data);
     }
 });
